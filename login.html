@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập — VietFood Guard</title>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #f0fdf4; /* Emerald 50 */
+      --surface: #ffffff;
+      --card:    #ffffff;
+      --border:  rgba(0,0,0,0.06);
+      --border2: rgba(0,0,0,0.1);
+      --muted:   #1f2937; /* Gray 800 */
+      --text:    #064e3b; /* Emerald 900 */
+      --accent:  #10b981; /* Emerald 500 */
+      --accent2: #059669; /* Emerald 600 */
+      --glow:    rgba(16,185,129,0.1);
+    }
+
+    html, body {
+      min-height: 100%;
+      height: auto;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      color: var(--text);
+      display: flex;
+      overflow-x: hidden;
+      overflow-y: visible;
+      position: relative;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel {
+      display: none;
+      flex: 1; position: relative;
+      background: transparent;
+      padding: 64px;
+      flex-direction: column; justify-content: space-between;
+      overflow: visible !important;
+    }
+    @media (min-width: 900px) { .left-panel { display: flex; } }
+
+    .lp-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 60% at 30% 40%, rgba(16,185,129,.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 70% 70%, rgba(16,185,129,.04) 0%, transparent 50%);
+    }
+
+    .lp-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(16,185,129,.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(16,185,129,.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .lp-logo {
+      display: flex; align-items: center;
+      position: relative; z-index: 1;
+    }
+    .lp-logo img { height: 130px; width: auto; object-fit: contain; }
+
+    .lp-content {
+      position: relative; z-index: 1;
+    }
+    .lp-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 100px;
+      background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.2);
+      font-size: 11px; font-weight: 700; color: var(--accent2);
+      letter-spacing: .5px; text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .live-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent); animation: blink 1.5s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+    .lp-headline {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1.1; letter-spacing: -1px;
+      color: var(--text); margin-bottom: 24px;
+    }
+    .lp-headline em { 
+      color: #74cc00; 
+      font-style: italic; 
+      font-weight: 800; 
+      display: inline-block;
+      min-width: 10px;
+      text-shadow: 0 0 15px rgba(116,204,0,0.2);
+    }
+    .typing-cursor {
+      display: inline-block;
+      width: 3px;
+      height: 0.8em;
+      background: #74cc00;
+      margin-left: 4px;
+      animation: cursorBlink 0.8s infinite;
+      vertical-align: middle;
+      box-shadow: 0 0 10px rgba(116,204,0,0.4);
+    }
+    @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .lp-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 420px; }
+
+    .lp-stats {
+      display: flex; gap: 32px; margin-top: 48px;
+    }
+    .lp-stat-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px; color: var(--text); display: block;
+    }
+    .lp-stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    /* ─── MODULES TRẠNG THÁI HỆ THỐNG ─── */
+    .tech-modules {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-top: 40px;
+      max-width: 420px;
+    }
+    .tech-mod {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      border-radius: 12px; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      position: relative; overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .tech-mod:hover {
+      background: #ffffff;
+      border-color: rgba(16,185,129,.2);
+      box-shadow: 0 8px 24px rgba(16,185,129,.08);
+      transform: translateY(-4px);
+      transform: translateY(-2px);
+    }
+    .tm-header {
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px dashed rgba(0,0,0,.05);
+      padding-bottom: 10px;
+    }
+    .tm-icon { font-size: 16px; }
+    .tm-title { font-size: 10px; font-weight: 700; color: var(--text); letter-spacing: 0.8px; text-transform: uppercase;}
+    
+    .tm-body { display: flex; flex-direction: column; gap: 6px; flex: 1; margin-top: 4px;}
+    .tm-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-family: monospace;}
+    .tm-row .hl { color: var(--accent2); font-weight: 700;}
+
+    .tm-status { 
+      font-size: 9px; font-weight: 700; color: #22c55e; 
+      margin-top: 8px; background: rgba(34,197,94,.1);
+      padding: 4px 10px; border-radius: 6px; display: inline-block; width: fit-content;
+      letter-spacing: 0.5px;
+    }
+
+    .lp-footer { position: relative; z-index: 1; margin-top: 40px;}
+    .lp-footer-text { font-size: 11px; color: rgba(0,0,0,.6); line-height: 1.7; }
+
+    /* ── RIGHT PANEL (LOGIN FORM) ── */
+    .right-panel {
+      width: 100%;
+      max-width: 100%;
+      background: var(--surface);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      padding: 64px 48px;
+      position: relative;
+      background: transparent;
+      overflow: visible !important;
+    }
+    @media (min-width: 900px) {
+      .right-panel { width: 480px; flex-shrink: 0; max-width: 480px; }
+    }
+
+    .rp-bg {
+      position: fixed; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 80% at 100% 100%, rgba(16,185,129,.05) 0%, transparent 60%);
+    }
+
+    .login-box {
+      width: 100%; max-width: 440px;
+      position: relative; z-index: 1;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    }
+
+    .login-logo {
+      display: flex; flex-direction: column; align-items: center;
+      margin-bottom: 30px; text-align: center;
+    }
+    .login-logo img {
+      height: 180px; width: auto; object-fit: contain; margin-bottom: 16px;
+      animation: floatShield 4s ease-in-out infinite;
+    }
+    @keyframes floatShield {
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-6px)}
+    }
+
+    .sys-status {
+      background: rgba(16,185,129,.05);
+      border: 1px solid rgba(16,185,129,.1);
+      border-radius: 10px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 28px;
+    }
+    .sys-dot-wrap {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+      box-shadow: 0 0 8px var(--accent);
+      animation: blink 2s infinite;
+    }
+    .sys-text { font-size: 12px; color: var(--muted); flex: 1; }
+    .sys-text strong { color: var(--accent); }
+    .sys-time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--muted); letter-spacing: .5px;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .form-input {
+      width: 100%; padding: 13px 16px;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text); font-size: 14px; font-family: inherit;
+      transition: all .25s; outline: none;
+    }
+    .form-input::placeholder { color: #6b7280; }
+    .form-input:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(16,185,129,.1);
+    }
+
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 15px; pointer-events: none;
+    }
+    .has-icon .form-input { padding-left: 42px; }
+
+    .toggle-pw {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 14px; padding: 4px;
+      transition: color .2s;
+    }
+    .toggle-pw:hover { color: var(--text); }
+
+    .form-hint {
+      font-size: 11px; color: var(--muted); margin-top: 6px;
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    .btn-login {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none; border-radius: 12px;
+      color: white; font-size: 15px; font-weight: 700;
+      font-family: inherit; cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 8px 30px rgba(16,185,129,.2);
+      margin-top: 8px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(16,185,129,.3);
+    }
+    .btn-login:active { transform: translateY(0); }
+
+    .role-select {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      margin-bottom: 24px;
+    }
+    .role-btn {
+      padding: 10px 12px; border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      color: var(--muted); font-size: 13px; font-weight: 500;
+      font-family: inherit; cursor: pointer; text-align: center;
+      transition: all .2s;
+    }
+    .role-btn:hover { border-color: var(--border2); color: var(--text); }
+    .role-btn.active {
+      border-color: var(--accent);
+      background: rgba(16,185,129,.05);
+      color: var(--accent2);
+    }
+    .role-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+
+    .back-link {
+      text-align: center; margin-top: 28px;
+      font-size: 13px; color: var(--muted);
+    }
+    .back-link a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .back-link a:hover { text-decoration: underline; }
+
+    .rp-legal {
+      font-size: 11px; color: rgba(0,0,0,.5);
+      text-align: center; width: 100%;
+      margin-top: auto; padding-top: 40px;
+    }
+
+    #errMsg {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      display: none;
+      animation: shake 0.4s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+
+  </style>
+</head>
+<body>
+
+
+  <div class="left-panel">
+    <div id="tsparticles-login" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
+    <div class="lp-bg"></div>
+    <div class="lp-grid"></div>
+
+    <div class="lp-logo">
+      <img src="/static/logo.png" alt="VietFood Guard">
+    </div>
+
+    <div class="lp-content">
+      <div class="lp-badge"><span class="live-dot"></span>Hệ thống đang hoạt động</div>
+      <h2 class="lp-headline">Bảo vệ bếp ăn của bạn<br>bằng <em id="typingText"></em><span class="typing-cursor"></span></h2>
+      <p class="lp-sub">Giám sát vệ sinh an toàn thực phẩm 24/7 — phát hiện vi phạm trong chưa đến 2 giây, cảnh báo tức thì qua Telegram.</p>
+
+      <div class="lp-stats">
+        <div>
+          <span class="lp-stat-num">24/7</span>
+          <div class="lp-stat-label">Giám sát liên tục</div>
+        </div>
+        <div>
+          <span class="lp-stat-num">10+</span>
+          <div class="lp-stat-label">Loại vi phạm</div>
+        </div>
+        <div>
+          <span class="lp-stat-num">100%</span>
+          <div class="lp-stat-label">Tuân thủ ATTP</div>
+        </div>
+      </div>
+
+      <div class="tech-modules">
+        <div class="tech-mod">
+          <div class="tm-header">
+            <span class="tm-icon">🧠</span>
+            <span class="tm-title">Lõi Trí Tuệ Nhân Tạo</span>
+          </div>
+          <div class="tm-body">
+            <div class="tm-row"><span>Mô hình:</span><span class="hl">YOLOv8 Vision</span></div>
+            <div class="tm-row"><span>Tốc độ:</span><span>&lt; 15ms/frame</span></div>
+          </div>
+          <div class="tm-status">✓ ĐANG HOẠT ĐỘNG</div>
+        </div>
+
+        <div class="tech-mod">
+          <div class="tm-header">
+            <span class="tm-icon">📲</span>
+            <span class="tm-title">Hệ Thống Cảnh Báo</span>
+          </div>
+          <div class="tm-body">
+            <div class="tm-row"><span>Kênh:</span><span class="hl">Telegram API</span></div>
+            <div class="tm-row"><span>Độ trễ:</span><span>&lt; 2 giây</span></div>
+          </div>
+          <div class="tm-status">✓ ĐÃ KẾT NỐI</div>
+        </div>
+
+        <div class="tech-mod">
+          <div class="tm-header">
+            <span class="tm-icon">🗄️</span>
+            <span class="tm-title">Cơ Sở Dữ Liệu</span>
+          </div>
+          <div class="tm-body">
+            <div class="tm-row"><span>Engine:</span><span class="hl">SQLite Secure</span></div>
+            <div class="tm-row"><span>Lưu trữ:</span><span>Auto-sync (2s)</span></div>
+          </div>
+          <div class="tm-status">✓ ĐÃ ĐỒNG BỘ</div>
+        </div>
+
+        <div class="tech-mod">
+          <div class="tm-header">
+            <span class="tm-icon">⚖️</span>
+            <span class="tm-title">Tiêu Chuẩn Pháp Lý</span>
+          </div>
+          <div class="tm-body">
+            <div class="tm-row"><span>Đạo luật:</span><span class="hl">ATTP 2010</span></div>
+            <div class="tm-row"><span>Chuẩn:</span><span>QCVN 8-3:2012</span></div>
+          </div>
+          <div class="tm-status">✓ TUÂN THỦ 100%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lp-footer">
+      <div class="lp-footer-text">
+        Luật ATTP 2010 (55/2010/QH12) · QCVN 8-3:2012/BYT<br>
+        Nghị định 115/2018/NĐ-CP · WHO Hand Hygiene 2019<br>
+        VietFood Guard © 2026
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="rp-bg"></div>
+    <div class="login-box">
+
+      <div class="login-logo">
+        <img src="/static/logo.png" alt="VietFood Guard">
+      </div>
+
+      <div class="sys-status">
+        <div class="sys-dot-wrap"></div>
+        <div class="sys-text">Máy chủ <strong>ổn định</strong> · Camera AI sẵn sàng</div>
+        <div class="sys-time" id="loginClock">--:--:--</div>
+      </div>
+
+
+
+      <form action="/login" method="POST" id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Tài khoản</label>
+          <div class="input-wrap has-icon">
+            <span class="input-icon">✉️</span>
+            <input type="text" name="username" class="form-input" id="emailInput" placeholder="Email hoặc tên đăng nhập" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mật khẩu</label>
+          <div class="input-wrap has-icon">
+            <span class="input-icon">🔒</span>
+            <input type="password" name="password" class="form-input" id="pwInput" placeholder="Nhập mật khẩu" required>
+            <button type="button" class="toggle-pw" onclick="togglePw()" id="toggleBtn">👁️</button>
+          </div>
+          <div class="form-hint">🔐 Mã hóa SSL — dữ liệu được bảo mật</div>
+        </div>
+
+        <div id="errMsg">
+          ❌ Tài khoản hoặc mật khẩu không chính xác. Vui lòng thử lại.
+        </div>
+
+        <button type="submit" class="btn-login" onclick="this.innerHTML='Đang xác thực...'">
+          <span>🛡️</span> <span>Đăng nhập vào hệ thống</span>
+        </button>
+      </form>
+
+      <div class="back-link" style="margin-top: 20px; font-size: 14px;">
+        Chưa có tài khoản? <a href="/register" style="font-weight: 600;">Đăng ký ngay</a>
+      </div>
+      <div class="back-link" style="margin-top: 12px;">
+        <a href="/">← Quay về trang giới thiệu</a>
+      </div>
+    </div>
+
+    <div class="rp-legal">
+      Theo Luật ATTP 2010 | QCVN 8-3:2012/BYT | Nghị định 115/2018/NĐ-CP
+    </div>
+  </div>
+
+  <script>
+    function updateClock() {
+      document.getElementById('loginClock').textContent =
+        new Date().toLocaleTimeString('vi-VN', {hour12: false});
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    function selectRole(btn) {
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function togglePw() {
+      const inp = document.getElementById('pwInput');
+      const btn = document.getElementById('toggleBtn');
+      if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+      else { inp.type = 'password'; btn.textContent = '👁️'; }
+    }
+
+    // Tự động hiện lỗi nếu URL có ?error=1
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.get('error') === '1') {
+        document.getElementById('errMsg').style.display = 'block';
+      }
+    };
+
+    // Hiệu ứng gõ chữ (Vòng lặp)
+    const textToType = "trí tuệ nhân tạo";
+    const typingElement = document.getElementById('typingText');
+    let charIndex = 0;
+    let isDeleting = false;
+
+    function type() {
+      const currentText = textToType;
+      
+      if (isDeleting) {
+        typingElement.textContent = currentText.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        typingElement.textContent = currentText.substring(0, charIndex + 1);
+        charIndex++;
+      }
+
+      let typeSpeed = isDeleting ? 50 : 100;
+
+      if (!isDeleting && charIndex === currentText.length) {
+        isDeleting = true;
+        typeSpeed = 2000; // Nghỉ 2s khi gõ xong
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        typeSpeed = 500; // Nghỉ 0.5s khi xóa xong
+      }
+
+      setTimeout(type, typeSpeed);
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(type, 1000);
+    });
+
+    // Particles cho login (Optimized)
+    tsParticles.load("tsparticles-login", {
+      fpsLimit: 60,
+      particles: {
+        number: { value: 60, density: { enable: true, value_area: 800 } },
+        color: { value: "#10b981" },
+        opacity: { value: 0.7, random: true },
+        size: { value: 4.5, random: true },
+        move: { enable: true, speed: 0.8, direction: "top", random: false, straight: false, out_mode: "out", bounce: false }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: { onhover: { enable: false }, onclick: { enable: true, mode: "push" }, resize: true },
+        modes: { push: { particles_nb: 3 } }
+      },
+      retina_detect: true
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — VietFood Guard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #060d14;
+      --bg2: #0b1420;
+      --surface: #0f1e2d;
+      --card: #132030;
+      --border: rgba(255, 255, 255, .07);
+      --border2: rgba(255, 255, 255, .12);
+      --muted: rgba(255, 255, 255, .7);
+      --muted2: rgba(255, 255, 255, .9);
+      --text: #ffffff;
+      --green: #22c55e;
+      --green2: #16a34a;
+      --green-lt: rgba(34, 197, 94, .12);
+      --red: #ef4444;
+      --red2: #dc2626;
+      --red-lt: rgba(239, 68, 68, .12);
+      --amber: #f59e0b;
+      --amber-lt: rgba(245, 158, 11, .12);
+      --blue: #3b82f6;
+      --blue-lt: rgba(59, 130, 246, .12);
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 60px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      gap: 16px;
+    }
+
+    .tb-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .tb-shield {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      box-shadow: 0 3px 12px rgba(34, 197, 94, .25);
+    }
+
+    .tb-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 18px;
+      color: white;
+      letter-spacing: -.2px;
+    }
+
+    .tb-name em {
+      color: var(--green);
+      font-style: normal;
+    }
+
+    .tb-center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tb-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .tb-breadcrumb .sep {
+      opacity: .7;
+    }
+
+    .tb-breadcrumb .current {
+      color: var(--muted2);
+      font-weight: 500;
+    }
+
+    .tb-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tb-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      border-radius: 100px;
+      background: var(--green-lt);
+      border: 1px solid rgba(34, 197, 94, .2);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .status-live {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    .tb-time {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted2);
+      font-variant-numeric: tabular-nums;
+      background: rgba(255, 255, 255, .05);
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .tb-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transition: all .2s;
+      color: var(--muted2);
+      text-decoration: none;
+    }
+
+    .tb-btn:hover {
+      background: rgba(255, 255, 255, .1);
+      border-color: var(--border2);
+    }
+
+    /* ─── MAIN LAYOUT ─── */
+    .main-layout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      padding: 0 16px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 8px;
+      margin-bottom: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted2);
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, .05);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: var(--green-lt);
+      border-color: rgba(34, 197, 94, .2);
+      color: var(--green);
+    }
+
+    .nav-icon {
+      font-size: 15px;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--red);
+      color: white;
+      padding: 1px 6px;
+      border-radius: 100px;
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 12px 16px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .user-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .user-role {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    /* ─── CONTENT ─── */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    /* ─── STAT CARDS ROW ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 1200px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 20px 18px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--border2);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+    }
+
+    .stat-card.red::before {
+      background: linear-gradient(90deg, var(--red), transparent);
+    }
+
+    .stat-card.green::before {
+      background: linear-gradient(90deg, var(--green), transparent);
+    }
+
+    .stat-card.amber::before {
+      background: linear-gradient(90deg, var(--amber), transparent);
+    }
+
+    .stat-card.blue::before {
+      background: linear-gradient(90deg, var(--blue), transparent);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .stat-label-text {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .stat-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .stat-icon.red {
+      background: var(--red-lt);
+    }
+
+    .stat-icon.green {
+      background: var(--green-lt);
+    }
+
+    .stat-icon.amber {
+      background: var(--amber-lt);
+    }
+
+    .stat-icon.blue {
+      background: var(--blue-lt);
+    }
+
+    .stat-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 38px;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .stat-value.red {
+      color: var(--red);
+    }
+
+    .stat-value.green {
+      color: var(--green);
+    }
+
+    .stat-value.amber {
+      color: var(--amber);
+    }
+
+    .stat-value.blue {
+      color: var(--blue);
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      margin-top: 6px;
+    }
+
+    .stat-badge.up {
+      background: rgba(239, 68, 68, .15);
+      color: #fca5a5;
+    }
+
+    .stat-badge.down {
+      background: var(--green-lt);
+      color: #86efac;
+    }
+
+    /* ─── MIDDLE ROW ─── */
+    .middle-row {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    @media (max-width: 1100px) {
+      .middle-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Camera Panel */
+    .cam-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Form thêm Camera */
+    .add-cam-form {
+      padding: 12px 18px;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .add-cam-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .add-cam-input:focus {
+      border-color: var(--green);
+    }
+
+    .add-cam-btn {
+      background: var(--green);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 12px;
+      transition: 0.2s;
+    }
+
+    .add-cam-btn:hover {
+      background: var(--green2);
+    }
+
+    .cam-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      flex: 1;
+      overflow-y: auto;
+      background: #000;
+    }
+
+    .cam-cell {
+      background: #070d14;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      min-height: 250px;
+    }
+
+    .cam-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      background: rgba(0, 0, 0, .6);
+      z-index: 2;
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+    }
+
+    .cam-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .cam-dot.live {
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: blink 2s infinite;
+    }
+
+    .cam-name {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .6);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .delete-cam-btn {
+      margin-left: auto;
+      font-size: 9px;
+      font-weight: 700;
+      color: #fca5a5;
+      background: rgba(239, 68, 68, .15);
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-decoration: none;
+      border: 1px solid rgba(239, 68, 68, .3);
+      transition: 0.2s;
+    }
+
+    .delete-cam-btn:hover {
+      background: rgba(239, 68, 68, .3);
+      color: white;
+    }
+
+    .cam-body {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cam-body img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      inset: 0;
+    }
+
+    .cam-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cam-placeholder .ico {
+      font-size: 24px;
+      opacity: .6;
+    }
+
+    .cam-placeholder .txt {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .cam-corner {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      z-index: 2;
+      font-size: 9px;
+      color: rgba(255, 255, 255, .7);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ─── RIGHT PANEL ─── */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .info-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    /* Alert bell */
+    .alert-count-card {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .alert-count-card::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      left: -30%;
+      width: 160%;
+      height: 160%;
+      background: radial-gradient(ellipse at center, rgba(239, 68, 68, .06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .alert-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .alert-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 56px;
+      line-height: 1;
+      color: var(--red);
+      text-shadow: 0 0 40px rgba(239, 68, 68, .3);
+    }
+
+    .alert-today {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .alert-sync {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      color: var(--green);
+      background: var(--green-lt);
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-top: 8px;
+    }
+
+    /* Violation log */
+    .violation-log {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .log-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .log-item {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+
+    .log-item-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .log-type {
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--red-lt);
+      color: #fca5a5;
+      padding: 2px 8px;
+      border-radius: 5px;
+      flex: 1;
+    }
+
+    .log-time {
+      font-size: 10px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .04);
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-variant-numeric: tabular-nums;
+      border: 1px solid var(--border);
+    }
+
+    .log-detail {
+      background: rgba(0, 0, 0, .25);
+      border-radius: 7px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .log-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+    }
+
+    .log-row .k {
+      color: var(--muted);
+    }
+
+    .log-row .v {
+      color: var(--muted2);
+      font-weight: 500;
+    }
+
+    .log-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .log-empty .ico {
+      font-size: 28px;
+      margin-bottom: 10px;
+      display: block;
+      opacity: .8;
+    }
+
+    .log-empty .msg {
+      font-size: 12px;
+    }
+
+    /* Scrollbars */
+    .content::-webkit-scrollbar,
+    .cam-grid::-webkit-scrollbar,
+    .log-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .content::-webkit-scrollbar-thumb,
+    .cam-grid::-webkit-scrollbar-thumb,
+    .log-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <a href="/" class="tb-logo">
+      <div class="tb-shield">🛡️</div>
+      <span class="tb-name">VietFood <em>Guard</em></span>
+    </a>
+    <div class="tb-center">
+      <div class="tb-breadcrumb">
+        <span>Chuỗi Kim Bảo</span>
+        <span class="sep">›</span>
+        <span class="current">Dashboard Giám sát Đa Luồng</span>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-status"><span class="status-live"></span>LIVE</div>
+      <div class="tb-time" id="topClock">00:00:00</div>
+      <a href="/" class="tb-btn" title="Thoát">🚪</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Chính</div>
+        <a class="nav-item active"><span class="nav-icon">📊</span>Dashboard</a>
+        <a class="nav-item"><span class="nav-icon">📷</span>Quản lý Thiết bị</a>
+        <a class="nav-item"><span class="nav-icon">⚠️</span>Vi phạm <span class="nav-badge"
+            id="sideViolations">0</span></a>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Hệ thống</div>
+        <a class="nav-item"><span class="nav-icon">🔔</span>Cảnh báo Telegram</a>
+        <a class="nav-item"><span class="nav-icon">⚙️</span>Cài đặt Server</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar">👔</div>
+          <div>
+            <div class="user-name">Admin</div>
+            <div class="user-role">Quản lý hệ thống</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="stats-row">
+        <div class="stat-card red">
+          <div class="stat-header">
+            <div class="stat-label-text">Vi phạm hôm nay</div>
+            <div class="stat-icon red">⚠️</div>
+          </div>
+          <div class="stat-value red" id="statToday">0</div>
+          <div class="stat-badge up" id="statBadge">● Đang theo dõi</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-header">
+            <div class="stat-label-text">Thiết bị hoạt động</div>
+            <div class="stat-icon green">📷</div>
+          </div>
+          <div class="stat-value green" id="statCams">0</div>
+          <div class="stat-sub">Camera đang quét AI</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-header">
+            <div class="stat-label-text">Cảnh báo gửi</div>
+            <div class="stat-icon amber">📲</div>
+          </div>
+          <div class="stat-value amber" id="statAlerts">0</div>
+          <div class="stat-sub">Telegram tự động</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-header">
+            <div class="stat-label-text">Thời gian Server</div>
+            <div class="stat-icon blue">⏱️</div>
+          </div>
+          <div class="stat-value blue" id="statUptime">00:00</div>
+          <div class="stat-sub">Từ khi khởi động</div>
+        </div>
+      </div>
+
+      <div class="middle-row">
+        <div class="cam-panel">
+          <div class="panel-header">
+            <div class="panel-title">🌐 Hệ Thống Giám Sát Đa Luồng (Multi-stream)</div>
+          </div>
+
+          <form class="add-cam-form" action="/add_camera" method="POST">
+            <span style="font-size: 12px; font-weight: 600; color: var(--muted2);">➕ THÊM THIẾT BỊ:</span>
+            <input type="text" name="name" class="add-cam-input" placeholder="Tên Camera (VD: Kho Mát)" required>
+            <input type="text" name="url" class="add-cam-input" placeholder="Nhập Link RTSP hoặc Webcam (Số 0, 1...)"
+              required>
+            <button type="submit" class="add-cam-btn">Tích hợp AI</button>
+          </form>
+
+          <div class="cam-grid" id="dynamic-cam-grid">
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="info-panel">
+            <div class="alert-count-card">
+              <div class="alert-label">Tổng Vi Phạm</div>
+              <div class="alert-num" id="bigCount">0</div>
+              <div class="alert-today">ca vi phạm bị ghi nhận</div>
+              <div class="alert-sync"><span class="status-live"></span>Live Auto-Sync • 2s</div>
+            </div>
+          </div>
+
+          <div class="info-panel violation-log" style="flex:1;min-height:0">
+            <div class="panel-header">
+              <div class="panel-title">⚠️ Nhật ký tự động</div>
+            </div>
+            <div class="log-list" id="logList">
+              <div class="log-empty"><span class="ico">✨</span><span class="msg">Chưa có dữ liệu</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ── XỬ LÝ LƯỚI CAMERA ĐỘNG ──
+    async function loadCameras() {
+      try {
+        const res = await fetch('/get_cameras');
+        const cams = await res.json();
+        const grid = document.getElementById('dynamic-cam-grid');
+
+        // Cập nhật số đếm Camera trên khung Thống kê
+        document.getElementById('statCams').textContent = cams.length;
+
+        if (cams.length === 0) {
+          grid.innerHTML = '<div style="padding: 40px; color: #555; text-align: center; grid-column: span 2;">Chưa có thiết bị nào được liên kết.<br>Hãy thêm Camera vào hệ thống thông qua thanh công cụ phía trên.</div>';
+          return;
+        }
+
+        grid.innerHTML = cams.map(cam => `
+          <div class="cam-cell">
+            <div class="cam-header">
+              <span class="cam-dot live"></span>
+              <span class="cam-name">${cam.name}</span>
+              <a href="/delete_camera/${cam.id}" class="delete-cam-btn" title="Gỡ thiết bị">[ Xóa ]</a>
+            </div>
+            <div class="cam-body">
+              <img src="/video_feed/${cam.id}" alt="Live feed" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="cam-placeholder" style="display:none">
+                <span class="ico">📷</span>
+                <span class="txt">Đang tải luồng dữ liệu...</span>
+              </div>
+              <span class="cam-corner current-time">--:--:--</span>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error("Chưa bật Server Python", e);
+      }
+    }
+    // Chạy tải camera ngay khi mở trang
+    loadCameras();
+
+    // ── ĐỒNG HỒ ──
+    let startTime = Date.now();
+    function updateClock() {
+      const now = new Date();
+      const t = now.toLocaleTimeString('vi-VN', { hour12: false });
+      document.getElementById('topClock').textContent = t;
+      document.querySelectorAll('.current-time').forEach(el => el.textContent = t);
+
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const hh = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+      const mm = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+      document.getElementById('statUptime').textContent = hh + ':' + mm;
+    }
+    setInterval(updateClock, 1000);
+
+    // ── FETCH THỐNG KÊ LOG AI ──
+    let prevCount = 0;
+    let alertsSent = 0;
+
+    async function updateStats() {
+      try {
+        const res = await fetch('/stats?t=' + Date.now());
+        const data = await res.json();
+        const count = data.total_today || 0;
+
+        document.getElementById('statToday').textContent = count;
+        document.getElementById('bigCount').textContent = count;
+        document.getElementById('sideViolations').textContent = count;
+
+        if (count > prevCount) {
+          alertsSent++;
+          document.getElementById('statAlerts').textContent = alertsSent;
+          prevCount = count;
+        }
+
+        const badge = document.getElementById('statBadge');
+        if (count === 0) {
+          badge.className = 'stat-badge down';
+          badge.textContent = '✓ Khu vực an toàn';
+        } else {
+          badge.className = 'stat-badge up';
+          badge.textContent = `▲ ${count} vi phạm hôm nay`;
+        }
+
+        renderLog(data.history || []);
+      } catch (e) { }
+    }
+
+    function renderLog(history) {
+      const list = document.getElementById('logList');
+      if (!history || history.length === 0) {
+        list.innerHTML = '<div class="log-empty"><span class="ico">✨</span><span class="msg">Khu vực an toàn<br>Chưa có vi phạm nào</span></div>';
+        return;
+      }
+      list.innerHTML = history.map(item => {
+        const timePart = item.time ? item.time.split(' ')[1] || item.time : '--:--:--';
+        return `
+          <div class="log-item">
+            <div class="log-item-top">
+              <span class="log-type">⚠️ ${item.type || 'Vi phạm'}</span>
+              <span class="log-time">${timePart}</span>
+            </div>
+            <div class="log-detail">
+              <div class="log-row"><span class="k">📍 Nguồn:</span><span class="v" style="color:var(--amber)">${item.location || '---'}</span></div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    setInterval(updateStats, 2000);
+  </script>
+</body>
+
+</html>
